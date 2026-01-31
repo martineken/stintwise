@@ -1,0 +1,61 @@
+import { notFound } from "next/navigation"
+import { Metadata } from "next"
+import Link from "next/link"
+import { getRaceBySlug, getRaceEntries, getStrategyEvents } from "@/lib/db/queries"
+import { RaceSummary } from "@/components/race/race-summary"
+import { StrategyTimeline } from "@/components/race/strategy-timeline"
+import { DriverBreakdowns } from "@/components/race/driver-breakdowns"
+import { Button } from "@/components/ui/button"
+
+interface Props {
+  params: { slug: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const race = await getRaceBySlug(params.slug)
+
+  if (!race) {
+    return { title: "Race Not Found" }
+  }
+
+  const title = `${race.season} ${race.name} Strategy Analysis | Stintwise`
+  const description = `Tire strategy, pit stops, and key moments from the ${race.season} ${race.name} at ${race.circuit}.`
+
+  return {
+    title,
+    description,
+  }
+}
+
+export default async function RacePage({ params }: Props) {
+  const race = await getRaceBySlug(params.slug)
+
+  if (!race) {
+    notFound()
+  }
+
+  const entries = await getRaceEntries(race.id)
+  const events = await getStrategyEvents(race.id)
+
+  return (
+    <main className="min-h-screen p-8">
+      <div className="mb-6">
+        <Link href="/">
+          <Button variant="ghost" className="pl-0">
+            ← Back to races
+          </Button>
+        </Link>
+      </div>
+
+      <RaceSummary race={race} entries={entries} />
+      
+      <div className="mt-8">
+        <StrategyTimeline events={events} entries={entries} />
+      </div>
+      
+      <div className="mt-8">
+        <DriverBreakdowns entries={entries} events={events} />
+      </div>
+    </main>
+  )
+}

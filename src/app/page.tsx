@@ -1,6 +1,6 @@
-import { db } from "@/lib/db"
-import { races } from "@/lib/db/schema"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { getAllRaces } from "@/lib/db/queries"
+import { raceSlug } from "@/lib/utils/slug"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import {
   Table,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table"
 
 export default async function HomePage() {
-  const allRaces = await db.select().from(races)
+  const allRaces = await getAllRaces()
 
   return (
     <main className="min-h-screen p-8">
@@ -23,14 +23,13 @@ export default async function HomePage() {
             F1 race analysis — understanding why races unfold the way they do.
           </p>
         </div>
-        <Button>Add Race</Button>
       </div>
 
       <Card className="mt-8">
         <CardHeader>
           <CardTitle>Races</CardTitle>
           <CardDescription>
-            All races in the database
+            Click a race to see strategy analysis
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -49,10 +48,17 @@ export default async function HomePage() {
               </TableHeader>
               <TableBody>
                 {allRaces.map((race) => (
-                  <TableRow key={race.id}>
+                  <TableRow key={race.id} className="cursor-pointer">
                     <TableCell>{race.season}</TableCell>
                     <TableCell>{race.round}</TableCell>
-                    <TableCell className="font-medium">{race.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link 
+                        href={`/race/${raceSlug(race.season, race.name)}`}
+                        className="hover:underline"
+                      >
+                        {race.name}
+                      </Link>
+                    </TableCell>
                     <TableCell>{race.circuit}</TableCell>
                     <TableCell>{race.country}</TableCell>
                   </TableRow>
