@@ -113,6 +113,14 @@ export default function AboutPage() {
             </a>.
           </p>
         </section>
+
+        <section className="pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground/70 leading-relaxed">
+            Stintwise is an unofficial project and is not associated in any way with the Formula 1 
+            companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP, GRAND PRIX 
+            and related marks are trade marks of Formula One Licensing B.V.
+          </p>
+        </section>
       </div>
     </div>
   )

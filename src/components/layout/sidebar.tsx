@@ -55,7 +55,7 @@ export function Sidebar() {
       <div className="flex h-16 items-center justify-between px-4 border-b border-border">
         {!collapsed && (
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded bg-foreground flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">SW</span>
             </div>
             <span className="font-bold text-lg tracking-tight">Stintwise</span>
