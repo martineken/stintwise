@@ -23,10 +23,10 @@ export function detectLongStints(input: AnalysisInput): Insight[] {
   
   // Calculate averages
   const avgStintLength: Map<number, number> = new Map()
-  for (const [stintNum, lengths] of stintLengths) {
+  stintLengths.forEach((lengths, stintNum) => {
     const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length
     avgStintLength.set(stintNum, avg)
-  }
+  })
   
   // Find drivers with notably long stints (>30% longer than average)
   for (const entry of input.entries) {
