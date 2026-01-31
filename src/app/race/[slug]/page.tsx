@@ -6,7 +6,6 @@ import { analyzeRace, prepareAnalysisInput } from "@/lib/analysis"
 import { RaceSummary } from "@/components/race/race-summary"
 import { StrategyTimeline } from "@/components/race/strategy-timeline"
 import { DriverBreakdowns } from "@/components/race/driver-breakdowns"
-import { Button } from "@/components/ui/button"
 
 interface Props {
   params: { slug: string }
@@ -72,22 +71,40 @@ export default async function RacePage({ params }: Props) {
   const insights = analyzeRace(analysisInput)
 
   return (
-    <main className="min-h-screen p-8 max-w-6xl mx-auto">
-      <div className="mb-6">
-        <Link href="/">
-          <Button variant="ghost" className="pl-0">
-            ← Back to races
-          </Button>
+    <div className="p-6 lg:p-8">
+      {/* Breadcrumb */}
+      <nav className="mb-6">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to races
         </Link>
+      </nav>
+
+      {/* Race header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-xs font-medium px-2 py-1 rounded bg-primary/10 text-primary">
+            {race.season}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            Round {race.round}
+          </span>
+        </div>
+        <h1 className="text-2xl lg:text-3xl font-bold">{race.name}</h1>
+        <p className="mt-1 text-muted-foreground">
+          {race.circuit} · {race.country}
+        </p>
       </div>
 
-      <RaceSummary race={race} entries={entries} />
-      
-      <div className="mt-8">
+      {/* Content sections */}
+      <div className="space-y-8">
+        <RaceSummary race={race} entries={entries} />
         <StrategyTimeline events={events} entries={entries} insights={insights} />
-      </div>
-      
-      <div className="mt-8">
         <DriverBreakdowns 
           entries={entries} 
           events={events} 
@@ -95,6 +112,6 @@ export default async function RacePage({ params }: Props) {
           totalLaps={totalLaps}
         />
       </div>
-    </main>
+    </div>
   )
 }

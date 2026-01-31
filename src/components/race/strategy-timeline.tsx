@@ -1,4 +1,3 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import type { StrategyEvent, RaceEntry, Driver, Stint } from "@/lib/db/schema"
 import type { Insight } from "@/lib/analysis"
 
@@ -75,55 +74,53 @@ export function StrategyTimeline({ events, entries, insights = [] }: StrategyTim
 
   if (displayItems.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Key Strategy Moments</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <section>
+        <h2 className="text-lg font-semibold mb-4">Key Strategy Moments</h2>
+        <div className="rounded-lg border border-dashed border-border p-8 text-center">
           <p className="text-muted-foreground">No significant strategy events detected.</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     )
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Key Strategy Moments</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+    <section>
+      <h2 className="text-lg font-semibold mb-4">Key Strategy Moments</h2>
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="divide-y divide-border">
           {displayItems.map((item) => (
-            <div key={item.id} className="flex gap-4 border-l-2 border-border pl-4 py-1">
+            <div key={item.id} className="flex gap-4 p-4 hover:bg-secondary/30 transition-colors">
               <div className="flex-shrink-0 w-16">
-                <span className="font-mono text-sm text-muted-foreground">
-                  Lap {item.lap}
+                <span className="inline-flex items-center justify-center w-full font-mono text-xs px-2 py-1 rounded bg-secondary text-muted-foreground">
+                  L{item.lap}
                 </span>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                    item.isInsight ? "bg-primary text-primary-foreground" : "bg-secondary"
+                    item.isInsight 
+                      ? "bg-primary/20 text-primary border border-primary/30" 
+                      : "bg-secondary text-muted-foreground"
                   }`}>
                     {item.label}
                   </span>
                   {item.positionsGained !== null && item.positionsGained !== 0 && (
                     <span
                       className={`text-xs font-semibold ${
-                        item.positionsGained > 0 ? "text-green-600" : "text-red-600"
+                        item.positionsGained > 0 ? "text-green-400" : "text-red-400"
                       }`}
                     >
                       {item.positionsGained > 0 ? "+" : ""}{item.positionsGained} pos
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-sm text-foreground">{item.description}</p>
+                <p className="mt-1.5 text-sm text-foreground/90">{item.description}</p>
               </div>
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   )
 }
 

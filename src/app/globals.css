@@ -3,23 +3,85 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light Theme */
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222 47% 11%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    --primary: 0 72% 51%;               /* Racing red */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+    
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    
+    --accent: 45 93% 47%;               /* Gold/yellow accent */
+    --accent-foreground: 222 47% 11%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 0 72% 51%;
+    
     --radius: 0.5rem;
+    
+    /* Custom Stintwise colors */
+    --stint-soft: 0 72% 51%;            /* Red - soft tire */
+    --stint-medium: 45 93% 47%;         /* Yellow - medium tire */
+    --stint-hard: 220 13% 91%;          /* Light gray - hard tire */
+    --stint-intermediate: 142 71% 45%;  /* Green - intermediate */
+    --stint-wet: 217 91% 60%;           /* Blue - wet */
+    
+    --success: 142 71% 45%;
+    --warning: 45 93% 47%;
+    --danger: 0 72% 51%;
+  }
+
+  /* Dark Theme */
+  .dark {
+    --background: 222 47% 6%;           /* Deep dark blue-black */
+    --foreground: 210 40% 98%;          /* Off-white text */
+    
+    --card: 222 47% 8%;                 /* Slightly lighter cards */
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 0 72% 51%;               /* Racing red */
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 222 47% 14%;           /* Muted blue-gray */
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 222 30% 18%;
+    --muted-foreground: 215 20% 55%;
+    
+    --accent: 45 93% 47%;               /* Gold/yellow accent */
+    --accent-foreground: 222 47% 6%;
+    
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 0 72% 51%;
+    
+    --stint-hard: 0 0% 90%;             /* White - hard tire in dark mode */
+    
+    --success: 142 71% 45%;
+    --warning: 45 93% 47%;
+    --danger: 0 72% 51%;
   }
 }
 
@@ -27,7 +89,42 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    @apply antialiased;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+  
+  .glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
   }
 }
