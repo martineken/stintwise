@@ -11,6 +11,8 @@ import {
   getPitStops,
   getSessionResults,
   getStartingGrid,
+  getQualifyingSession,
+  getQualifyingResults,
   getRaceControl,
   type OpenF1Driver,
 } from "./openf1-client"
@@ -79,7 +81,25 @@ async function importRace(meetingKey: number) {
   await delay(200)
   const openF1Results = await getSessionResults(raceSession.session_key)
   await delay(200)
-  const openF1Grid = await getStartingGrid(raceSession.session_key).catch(() => [])
+  
+  // Try to get starting grid, fall back to qualifying results
+  let openF1Grid = await getStartingGrid(raceSession.session_key).catch(() => [])
+  
+  if (openF1Grid.length === 0) {
+    console.log("  No starting grid data, trying qualifying results...")
+    await delay(200)
+    const qualiSession = await getQualifyingSession(meetingKey)
+    if (qualiSession) {
+      await delay(200)
+      const qualiResults = await getQualifyingResults(qualiSession.session_key)
+      // Convert qualifying results to grid format (position = grid position)
+      openF1Grid = qualiResults.map(r => ({
+        driver_number: r.driver_number,
+        position: r.position
+      }))
+    }
+  }
+  
   await delay(200)
   const openF1RaceControl = await getRaceControl(raceSession.session_key)
 

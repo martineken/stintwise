@@ -1,5 +1,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { StintVisualization } from "./stint-visualization"
 import type { StrategyEvent, RaceEntry, Driver, Stint } from "@/lib/db/schema"
+import type { Insight } from "@/lib/analysis"
 
 type RaceEntryWithDriver = RaceEntry & {
   driver: Driver
@@ -9,9 +11,11 @@ type RaceEntryWithDriver = RaceEntry & {
 interface DriverBreakdownsProps {
   entries: RaceEntryWithDriver[]
   events: StrategyEvent[]
+  insights?: Insight[]
+  totalLaps: number
 }
 
-export function DriverBreakdowns({ entries, events }: DriverBreakdownsProps) {
+export function DriverBreakdowns({ entries, events, insights = [], totalLaps }: DriverBreakdownsProps) {
   // Sort by finish position, DNFs at end
   const sorted = [...entries].sort((a, b) => {
     if (a.finishPosition && b.finishPosition) {
@@ -28,29 +32,13 @@ export function DriverBreakdowns({ entries, events }: DriverBreakdownsProps) {
     return `${delta}`
   }
 
-  const getCompoundColor = (compound: string) => {
-    switch (compound.toLowerCase()) {
-      case "soft":
-        return "bg-red-500"
-      case "medium":
-        return "bg-yellow-500"
-      case "hard":
-        return "bg-gray-200"
-      case "intermediate":
-        return "bg-green-500"
-      case "wet":
-        return "bg-blue-500"
-      default:
-        return "bg-gray-400"
-    }
-  }
-
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Driver Strategies</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {sorted.map((entry) => {
           const driverEvents = events.filter((e) => e.raceEntryId === entry.id)
+          const driverInsights = insights.filter((i) => i.driverNumber === entry.carNumber)
           const positionDelta = formatPositionDelta(entry.gridPosition, entry.finishPosition)
 
           return (
@@ -61,10 +49,10 @@ export function DriverBreakdowns({ entries, events }: DriverBreakdownsProps) {
                     {entry.driver.firstName} {entry.driver.lastName}
                   </span>
                   <span className="text-sm font-normal text-muted-foreground">
-                    P{entry.gridPosition} → P{entry.finishPosition}
+                    P{entry.gridPosition ?? "?"} → P{entry.finishPosition ?? "?"}
                     {positionDelta && (
                       <span
-                        className={`ml-2 ${
+                        className={`ml-2 font-medium ${
                           positionDelta.startsWith("+") ? "text-green-600" : "text-red-600"
                         }`}
                       >
@@ -75,46 +63,43 @@ export function DriverBreakdowns({ entries, events }: DriverBreakdownsProps) {
                 </CardTitle>
                 <CardDescription>{entry.team}</CardDescription>
               </CardHeader>
-              <CardContent>
-                {/* Stints */}
-                <div className="mb-3">
-                  <h4 className="text-xs font-medium text-muted-foreground mb-2">STINTS</h4>
-                  <div className="space-y-1">
-                    {entry.stints.map((stint) => (
-                      <div key={stint.id} className="flex items-center gap-2 text-sm">
-                        <div
-                          className={`w-3 h-3 rounded-full ${getCompoundColor(stint.compound)}`}
-                          title={stint.compound}
-                        />
-                        <span className="capitalize w-16">{stint.compound}</span>
-                        <span className="text-muted-foreground">
-                          L{stint.startLap}-{stint.endLap}
-                        </span>
-                        <span className="text-muted-foreground">
-                          ({stint.lapCount} laps)
-                        </span>
-                        {stint.degradation && (
-                          <span className="text-xs text-muted-foreground">
-                            {stint.degradation}s/lap
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+              <CardContent className="space-y-4">
+                {/* Stint visualization */}
+                <div>
+                  <h4 className="text-xs font-medium text-muted-foreground mb-2">TIRE STRATEGY</h4>
+                  <StintVisualization stints={entry.stints} totalLaps={totalLaps} />
                 </div>
 
-                {/* Key events for this driver */}
-                {driverEvents.length > 0 && (
+                {/* Analysis insights for this driver */}
+                {driverInsights.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-medium text-muted-foreground mb-2">KEY MOMENTS</h4>
+                    <h4 className="text-xs font-medium text-muted-foreground mb-2">ANALYSIS</h4>
                     <div className="space-y-1">
+                      {driverInsights.slice(0, 2).map((insight, idx) => (
+                        <p key={idx} className="text-sm">
+                          <span className={insight.positionsGained > 0 ? "text-green-600" : insight.positionsGained < 0 ? "text-red-600" : ""}>
+                            {insight.description}
+                          </span>
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pit stops */}
+                {driverEvents.filter(e => e.eventType === "pit_stop").length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-medium text-muted-foreground mb-2">PIT STOPS</h4>
+                    <div className="flex gap-2 flex-wrap">
                       {driverEvents
-                        .filter((e) => e.eventType !== "pit_stop" || (e.positionsGained ?? 0) !== 0)
-                        .slice(0, 3)
-                        .map((event) => (
-                          <p key={event.id} className="text-sm text-muted-foreground">
-                            Lap {event.lap}: {event.description?.split(" — ")[0]}
-                          </p>
+                        .filter((e) => e.eventType === "pit_stop")
+                        .map((event, idx) => (
+                          <span
+                            key={event.id ?? idx}
+                            className="text-xs bg-secondary px-2 py-1 rounded"
+                          >
+                            Lap {event.lap}
+                          </span>
                         ))}
                     </div>
                   </div>

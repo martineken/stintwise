@@ -153,6 +153,18 @@ export async function getStartingGrid(sessionKey: number): Promise<OpenF1Startin
   return fetchJson<OpenF1StartingGrid[]>("/starting_grid", { session_key: sessionKey })
 }
 
+export async function getQualifyingSession(meetingKey: number): Promise<OpenF1Session | null> {
+  const sessions = await fetchJson<OpenF1Session[]>("/sessions", { 
+    meeting_key: meetingKey,
+    session_name: "Qualifying"
+  })
+  return sessions[0] ?? null
+}
+
+export async function getQualifyingResults(sessionKey: number): Promise<OpenF1SessionResult[]> {
+  return fetchJson<OpenF1SessionResult[]>("/session_result", { session_key: sessionKey })
+}
+
 export async function getRaceControl(sessionKey: number): Promise<OpenF1RaceControl[]> {
   return fetchJson<OpenF1RaceControl[]>("/race_control", { session_key: sessionKey })
 }
